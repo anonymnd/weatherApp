@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="card">
+    <div class="card__search-box">
+        <input type="text" class ="search" id ="search" placeholder="Enter city name" />
+        <button class="btnInput"><img src="images/search.png" alt=""></button>
+    </div>
+    <div class="error">invalide city /country name</div>
+    <div class="weather">
+        <img class="image" src="images/clear.png" alt=""  class="weather__icon"/>
+        <h1 class="temp">22°</h1>
+        <h2  class="city">New York</h2>
+        <div class="details">
+            <div class="col">
+                <img src="images/humidity.png" alt="">
+                <div>
+                    <p class="humidity">50%</p>
+                    <p>Humidity</p>
+                </div>
+            </div>
+            <div class="col">
+                <img src="images/wind.png" alt="">
+                <div>
+                    <p class="wind">50km/hr</p>
+                    <p>Wind speed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    const apiKey = "0283320a47a153e9bc26ee8127d13135";
+    const urlApi ="https://api.openweathermap.org/data/2.5/weather?units=metric";
+    const tempEl = document.querySelector(".temp") ,
+    cityEl = document.querySelector(".city") ,
+    humidityEl = document.querySelector(".humidity") ,
+    windEl =document.querySelector(".wind") , 
+    inputEl = document.querySelector(".search"),
+    imageEL = document.querySelector(".image")
+    ;
+    var errorEl = document.querySelector(".error"),
+    weatherEl = document.querySelector(".weather");
+;
+
+;
+    document.querySelector(".btnInput").addEventListener("click",()=>{
+        weatherData(inputEl.value);
+    })
+    async function weatherData(inputValue){
+        const response = await fetch(urlApi+`&appid=${apiKey}&q=${inputValue}`);
+        var data = await response.json();
+        if(response.status == 404){
+            errorEl.style.display="block"
+            weatherEl.style.display="none";
+        }
+        cardFill(data);
+        weatherEl.style.display="block";
+        errorEl.style.display="none"
+
+    }
+    function cardFill(data){
+        tempEl.innerHTML=Math.round(data.main.temp)+"°C";
+        cityEl.innerHTML=data.name;
+        humidityEl.innerHTML=data.main.humidity ;
+        windEl.innerHTML=data.wind.speed +"km/h";
+        imageUpdate(data);
+    }
+    function imageUpdate(data) {
+    try {
+        if (data.weather[0].main == "Clouds") {
+            imageEL.src = "images/clouds.png";
+        } else if (data.weather[0].main == "Rain") {
+            imageEL.src = "images/rain.png";
+        } else if (data.weather[0].main == "Snow") {
+            imageEL.src = "images/snow.png";
+        } else if (data.weather[0].main == "Mist") {
+            imageEL.src = "images/mist.png";
+        } else if (data.weather[0].main == "Drizzle") {
+            imageEL.src = "images/drizzle.png";
+        } else if (data.weather[0].main == "Clear") {
+            imageEL.src = "images/clear.png";
+        } else {
+            // Handle the case where the weather condition doesn't match any known conditions
+            console.error("Unknown weather condition:", data.weather[0].main);
+        }
+    } catch (error) {
+        // Handle any errors that occur during image update
+        console.error("Error updating image:", error);
+    }
+}
+        
+    
+
+</script>
+</body>
+</html>
